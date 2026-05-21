@@ -1,0 +1,119 @@
+<div class="max-w-5xl mx-auto px-6 py-8">
+  <div *ngIf="loading" class="text-sm text-gray-400">Loading...</div>
+
+  <div *ngIf="project">
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-6">
+      <div>
+        <h1 class="text-2xl font-semibold text-gray-800">{{ project.name }}</h1>
+        <p *ngIf="project.description" class="text-sm text-gray-400 mt-1">{{ project.description }}</p>
+      </div>
+      <button *ngIf="isAdmin()" (click)="showTaskForm = true" class="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700">+ Add Task</button>
+    </div>
+
+    <!-- Add Task Form -->
+    <div *ngIf="showTaskForm" class="bg-white border border-gray-200 rounded p-6 mb-6">
+      <h2 class="text-base font-medium text-gray-700 mb-4">New Task</h2>
+      <div *ngIf="taskError" class="mb-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3">{{ taskError }}</div>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="col-span-2">
+          <label class="block text-sm text-gray-600 mb-1">Title *</label>
+          <input [(ngModel)]="taskTitle" type="text" placeholder="Task title"
+            class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+        </div>
+        <div class="col-span-2">
+          <label class="block text-sm text-gray-600 mb-1">Description</label>
+          <textarea [(ngModel)]="taskDesc" rows="2" placeholder="Optional"
+            class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Status</label>
+          <select [(ngModel)]="taskStatus" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            <option value="todo">To Do</option>
+            <option value="in_progress">In Progress</option>
+            <option value="done">Done</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Due Date</label>
+          <input [(ngModel)]="taskDueDate" type="date"
+            class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Assign To</label>
+          <select [(ngModel)]="taskAssigneeId" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+            <option [ngValue]="null">Unassigned</option>
+            <option *ngFor="let m of project.members" [ngValue]="m.user.id">{{ m.user.name }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button (click)="createTask()" class="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700">Create Task</button>
+        <button (click)="showTaskForm = false; taskError = ''" class="text-sm px-4 py-2 rounded border border-gray-300 hover:bg-gray-50">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Tasks -->
+    <div class="mb-8">
+      <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-3">Tasks ({{ tasks.length }})</h2>
+      <div *ngIf="tasks.length === 0" class="text-sm text-gray-400">No tasks yet.</div>
+      <div class="space-y-2">
+        <div *ngFor="let task of tasks" class="bg-white border border-gray-200 rounded px-4 py-3">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm font-medium text-gray-800">{{ task.title }}</p>
+              <p *ngIf="task.description" class="text-xs text-gray-400 mt-1">{{ task.description }}</p>
+              <div class="flex gap-3 mt-2 items-center">
+                <select [value]="task.status" (change)="updateStatus(task, $any($event.target).value)"
+                  class="text-xs border border-gray-200 rounded px-2 py-1 focus:outline-none">
+                  <option value="todo">To Do</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="done">Done</option>
+                </select>
+                <span *ngIf="task.assignee" class="text-xs text-gray-400">{{ task.assignee.name }}</span>
+                <span *ngIf="task.due_date" class="text-xs text-gray-400">Due {{ task.due_date }}</span>
+              </div>
+            </div>
+            <button *ngIf="isAdmin()" (click)="deleteTask(task.id)" class="text-xs text-red-400 hover:text-red-600">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Members -->
+    <div>
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Members ({{ project.members.length }})</h2>
+        <button *ngIf="isAdmin()" (click)="showMemberForm = !showMemberForm" class="text-xs text-blue-600 hover:underline">+ Add Member</button>
+      </div>
+
+      <div *ngIf="showMemberForm" class="bg-white border border-gray-200 rounded p-4 mb-4">
+        <div *ngIf="memberError" class="mb-3 text-sm text-red-600">{{ memberError }}</div>
+        <div class="flex gap-3">
+          <input [(ngModel)]="memberEmail" type="email" placeholder="Member's email"
+            class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+          <select [(ngModel)]="memberRole" class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none">
+            <option value="member">Member</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button (click)="addMember()" class="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700">Add</button>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div *ngFor="let m of project.members" class="bg-white border border-gray-200 rounded px-4 py-3 flex justify-between items-center">
+          <div>
+            <span class="text-sm text-gray-800">{{ m.user.name }}</span>
+            <span class="text-xs text-gray-400 ml-2">{{ m.user.email }}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs px-2 py-1 rounded" [class.bg-blue-100]="m.role === 'admin'" [class.text-blue-700]="m.role === 'admin'" [class.bg-gray-100]="m.role !== 'admin'" [class.text-gray-600]="m.role !== 'admin'">
+              {{ m.role }}
+            </span>
+            <button *ngIf="isAdmin() && m.user.id !== auth.getCurrentUser()?.id" (click)="removeMember(m.user.id)" class="text-xs text-red-400 hover:text-red-600">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

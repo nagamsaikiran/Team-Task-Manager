@@ -1,0 +1,70 @@
+<div class="max-w-5xl mx-auto px-6 py-8">
+  <h1 class="text-2xl font-semibold text-gray-800 mb-2">Dashboard</h1>
+  <p class="text-sm text-gray-500 mb-8">Welcome back, {{ auth.getCurrentUser()?.name }}</p>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-3 gap-4 mb-8">
+    <div class="bg-white border border-gray-200 rounded p-5">
+      <p class="text-sm text-gray-500">To Do</p>
+      <p class="text-3xl font-semibold text-gray-800 mt-1">{{ todoCount }}</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded p-5">
+      <p class="text-sm text-gray-500">In Progress</p>
+      <p class="text-3xl font-semibold text-blue-600 mt-1">{{ inProgressCount }}</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded p-5">
+      <p class="text-sm text-gray-500">Done</p>
+      <p class="text-3xl font-semibold text-green-600 mt-1">{{ doneCount }}</p>
+    </div>
+  </div>
+
+  <!-- Overdue Tasks -->
+  <div *ngIf="overdueTasks.length > 0" class="mb-8">
+    <h2 class="text-sm font-semibold text-red-600 uppercase tracking-wide mb-3">Overdue ({{ overdueTasks.length }})</h2>
+    <div class="space-y-2">
+      <div *ngFor="let task of overdueTasks" class="bg-red-50 border border-red-200 rounded px-4 py-3 flex justify-between items-center">
+        <span class="text-sm text-gray-800">{{ task.title }}</span>
+        <span class="text-xs text-red-500">Due {{ task.due_date }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Tasks -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide">My Tasks</h2>
+      <a routerLink="/tasks" class="text-xs text-blue-600 hover:underline">View all</a>
+    </div>
+    <div *ngIf="loading" class="text-sm text-gray-400">Loading...</div>
+    <div *ngIf="!loading && tasks.length === 0" class="text-sm text-gray-400">No tasks assigned to you yet.</div>
+    <div class="space-y-2">
+      <div *ngFor="let task of tasks.slice(0,5)" class="bg-white border border-gray-200 rounded px-4 py-3 flex justify-between items-center">
+        <span class="text-sm text-gray-800">{{ task.title }}</span>
+        <span class="text-xs px-2 py-1 rounded"
+          [class.bg-gray-100]="task.status === 'todo'"
+          [class.bg-blue-100]="task.status === 'in_progress'"
+          [class.text-blue-700]="task.status === 'in_progress'"
+          [class.bg-green-100]="task.status === 'done'"
+          [class.text-green-700]="task.status === 'done'"
+          [class.text-gray-600]="task.status === 'todo'">
+          {{ task.status === 'in_progress' ? 'In Progress' : task.status === 'done' ? 'Done' : 'To Do' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Projects -->
+  <div>
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Projects</h2>
+      <a routerLink="/projects" class="text-xs text-blue-600 hover:underline">View all</a>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <a *ngFor="let p of projects.slice(0,4)" [routerLink]="['/projects', p.id]"
+        class="bg-white border border-gray-200 rounded px-4 py-3 hover:border-blue-400 transition-colors">
+        <p class="text-sm font-medium text-gray-800">{{ p.name }}</p>
+        <p class="text-xs text-gray-400 mt-1">{{ p.members.length }} member{{ p.members.length !== 1 ? 's' : '' }}</p>
+      </a>
+    </div>
+  </div>
+</div>

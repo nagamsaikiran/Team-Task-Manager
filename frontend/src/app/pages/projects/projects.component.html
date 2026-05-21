@@ -1,0 +1,39 @@
+<div class="max-w-5xl mx-auto px-6 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-semibold text-gray-800">Projects</h1>
+    <button (click)="showForm = true" class="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700">+ New Project</button>
+  </div>
+
+  <!-- Create Project Form -->
+  <div *ngIf="showForm" class="bg-white border border-gray-200 rounded p-6 mb-6">
+    <h2 class="text-base font-medium text-gray-700 mb-4">New Project</h2>
+    <div *ngIf="error" class="mb-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3">{{ error }}</div>
+    <div class="mb-3">
+      <label class="block text-sm text-gray-600 mb-1">Name *</label>
+      <input [(ngModel)]="name" type="text" placeholder="Project name"
+        class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+    </div>
+    <div class="mb-4">
+      <label class="block text-sm text-gray-600 mb-1">Description</label>
+      <textarea [(ngModel)]="description" placeholder="Optional description" rows="2"
+        class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></textarea>
+    </div>
+    <div class="flex gap-3">
+      <button (click)="create()" [disabled]="loading" class="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50">
+        {{ loading ? 'Creating...' : 'Create' }}
+      </button>
+      <button (click)="cancel()" class="text-sm px-4 py-2 rounded border border-gray-300 hover:bg-gray-50">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Projects List -->
+  <div *ngIf="projects.length === 0 && !showForm" class="text-sm text-gray-400">No projects yet. Create one to get started.</div>
+  <div class="grid grid-cols-2 gap-4">
+    <a *ngFor="let p of projects" [routerLink]="['/projects', p.id]"
+      class="bg-white border border-gray-200 rounded p-5 hover:border-blue-400 transition-colors block">
+      <p class="font-medium text-gray-800">{{ p.name }}</p>
+      <p *ngIf="p.description" class="text-sm text-gray-400 mt-1">{{ p.description }}</p>
+      <p class="text-xs text-gray-400 mt-3">{{ p.members.length }} member{{ p.members.length !== 1 ? 's' : '' }}</p>
+    </a>
+  </div>
+</div>
