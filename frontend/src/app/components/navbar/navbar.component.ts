@@ -11,4 +11,8 @@ import { CommonModule } from '@angular/common';
 })
 export class NavbarComponent {
   constructor(public auth: AuthService) {}
+
+  get userInitial(): string {
+    return this.auth.getCurrentUser()?.name?.charAt(0)?.toUpperCase() || 'U';
+  }
 }

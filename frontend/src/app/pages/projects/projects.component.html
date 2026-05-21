@@ -1,39 +1,76 @@
-<div class="max-w-5xl mx-auto px-6 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-semibold text-gray-800">Projects</h1>
-    <button (click)="showForm = true" class="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700">+ New Project</button>
+<div class="p-8">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Projects</h1>
+      <p class="text-sm text-gray-500 mt-1">Manage your team projects</p>
+    </div>
+    <button (click)="showForm = true"
+      class="flex items-center gap-2 bg-blue-600 text-white text-sm px-4 py-2.5 rounded-md hover:bg-blue-700 transition-colors font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      New Project
+    </button>
   </div>
 
   <!-- Create Project Form -->
-  <div *ngIf="showForm" class="bg-white border border-gray-200 rounded p-6 mb-6">
-    <h2 class="text-base font-medium text-gray-700 mb-4">New Project</h2>
-    <div *ngIf="error" class="mb-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3">{{ error }}</div>
-    <div class="mb-3">
-      <label class="block text-sm text-gray-600 mb-1">Name *</label>
-      <input [(ngModel)]="name" type="text" placeholder="Project name"
-        class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
-    </div>
+  <div *ngIf="showForm" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <h2 class="text-base font-semibold text-gray-800 mb-4">New Project</h2>
+    <div *ngIf="error" class="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">{{ error }}</div>
     <div class="mb-4">
-      <label class="block text-sm text-gray-600 mb-1">Description</label>
-      <textarea [(ngModel)]="description" placeholder="Optional description" rows="2"
-        class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></textarea>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Project name <span class="text-red-500">*</span></label>
+      <input [(ngModel)]="name" type="text" placeholder="Enter project name"
+        class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+    </div>
+    <div class="mb-5">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Description <span class="text-gray-400 font-normal">(optional)</span></label>
+      <textarea [(ngModel)]="description" placeholder="What is this project about?" rows="2"
+        class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
     </div>
     <div class="flex gap-3">
-      <button (click)="create()" [disabled]="loading" class="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50">
-        {{ loading ? 'Creating...' : 'Create' }}
+      <button (click)="create()" [disabled]="loading"
+        class="bg-blue-600 text-white text-sm px-5 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors">
+        {{ loading ? 'Creating...' : 'Create Project' }}
       </button>
-      <button (click)="cancel()" class="text-sm px-4 py-2 rounded border border-gray-300 hover:bg-gray-50">Cancel</button>
+      <button (click)="cancel()" class="text-sm px-5 py-2 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors">Cancel</button>
     </div>
   </div>
 
-  <!-- Projects List -->
-  <div *ngIf="projects.length === 0 && !showForm" class="text-sm text-gray-400">No projects yet. Create one to get started.</div>
+  <!-- Empty state -->
+  <div *ngIf="projects.length === 0 && !showForm" class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+      </svg>
+    </div>
+    <p class="text-gray-500 text-sm">No projects yet. Create your first project to get started.</p>
+  </div>
+
+  <!-- Projects Grid -->
   <div class="grid grid-cols-2 gap-4">
     <a *ngFor="let p of projects" [routerLink]="['/projects', p.id]"
-      class="bg-white border border-gray-200 rounded p-5 hover:border-blue-400 transition-colors block">
-      <p class="font-medium text-gray-800">{{ p.name }}</p>
-      <p *ngIf="p.description" class="text-sm text-gray-400 mt-1">{{ p.description }}</p>
-      <p class="text-xs text-gray-400 mt-3">{{ p.members.length }} member{{ p.members.length !== 1 ? 's' : '' }}</p>
+      class="bg-white rounded-lg shadow-sm border border-gray-200 p-5 hover:shadow-md hover:border-blue-300 transition-all block">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-base flex-shrink-0">
+          {{ p.name.charAt(0).toUpperCase() }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-gray-800">{{ p.name }}</p>
+          <p *ngIf="p.description" class="text-sm text-gray-400 mt-0.5 truncate">{{ p.description }}</p>
+          <div class="flex items-center gap-1 mt-3">
+            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="text-xs text-gray-400">{{ p.members.length }} member{{ p.members.length !== 1 ? 's' : '' }}</span>
+          </div>
+        </div>
+        <svg class="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
     </a>
   </div>
+
 </div>

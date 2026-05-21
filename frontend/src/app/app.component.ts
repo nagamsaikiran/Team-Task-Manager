@@ -9,8 +9,15 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [RouterOutlet, NavbarComponent, CommonModule],
   template: `
-    <app-navbar *ngIf="auth.isLoggedIn()"></app-navbar>
-    <router-outlet></router-outlet>
+    <div class="flex h-screen bg-gray-100 overflow-hidden">
+      <app-navbar *ngIf="auth.isLoggedIn()"></app-navbar>
+      <main class="flex-1 overflow-auto">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+    <div *ngIf="!auth.isLoggedIn()">
+      <router-outlet></router-outlet>
+    </div>
   `
 })
 export class AppComponent {
