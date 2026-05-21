@@ -14,6 +14,8 @@ def signup(payload: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email already registered")
     if len(payload.password) < 6:
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    if len(payload.password) > 72:
+        raise HTTPException(status_code=400, detail="Password must be 72 characters or less")
 
     user = User(
         name=payload.name,
