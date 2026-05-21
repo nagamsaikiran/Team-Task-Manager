@@ -89,12 +89,11 @@
                     <option value="in_progress">In Progress</option>
                     <option value="done">Done</option>
                   </select>
-                  <div *ngIf="task.assignee" class="flex items-center gap-1">
-                    <div class="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                      {{ task.assignee.name.charAt(0) }}
-                    </div>
-                    <span class="text-xs text-gray-400">{{ task.assignee.name }}</span>
-                  </div>
+                  <select [value]="task.assignee_id ?? ''" (change)="updateStatus(task, task.status, +$any($event.target).value || null)"
+                    class="text-xs border border-gray-200 rounded px-2 py-1 focus:outline-none bg-white">
+                    <option value="">Unassigned</option>
+                    <option *ngFor="let m of project.members" [value]="m.user.id">{{ m.user.name }}</option>
+                  </select>
                   <span *ngIf="task.due_date" class="text-xs text-gray-400">Due {{ task.due_date }}</span>
                 </div>
               </div>
