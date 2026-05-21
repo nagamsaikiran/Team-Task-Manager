@@ -27,7 +27,7 @@ export class LoginComponent {
     }
     this.loading = true;
     this.auth.login({ email: this.email, password: this.password }).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => { this.loading = false; this.router.navigate(['/dashboard']); },
       error: (e) => {
         this.error = e.error?.detail || 'Login failed.';
         this.loading = false;

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -9,17 +9,27 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [RouterOutlet, NavbarComponent, CommonModule],
   template: `
-    <div class="flex h-screen bg-gray-100 overflow-hidden">
-      <app-navbar *ngIf="auth.isLoggedIn()"></app-navbar>
+    <div *ngIf="showNavbar" class="flex h-screen bg-gray-100 overflow-hidden">
+      <app-navbar></app-navbar>
       <main class="flex-1 overflow-auto">
         <router-outlet></router-outlet>
       </main>
     </div>
-    <div *ngIf="!auth.isLoggedIn()">
+    <div *ngIf="!showNavbar">
       <router-outlet></router-outlet>
     </div>
   `
 })
 export class AppComponent {
-  constructor(public auth: AuthService) {}
+  showNavbar = false;
+
+  constructor(public auth: AuthService, private router: Router) {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        const publicPages = ['/login', '/signup'];
+        const isPublic = publicPages.some(p => event.url.startsWith(p));
+        this.showNavbar = auth.isLoggedIn() && !isPublic;
+      }
+    });
+  }
 }
