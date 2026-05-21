@@ -75,8 +75,10 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
-  updateStatus(task: any, status: string) {
-    this.taskService.update(task.id, { status }).subscribe(() => this.loadTasks());
+  updateStatus(task: any, status: string, assigneeId?: number | null) {
+    const update: any = { status };
+    if (assigneeId !== undefined) update.assignee_id = assigneeId;
+    this.taskService.update(task.id, update).subscribe(() => this.loadTasks());
   }
 
   deleteTask(id: number) {
