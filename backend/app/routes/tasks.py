@@ -21,7 +21,7 @@ def require_project_member(project_id: int, user: User, db: Session):
         raise HTTPException(status_code=403, detail="Not a member of this project")
     return member
 
-@router.post("/", response_model=TaskOut, status_code=201)
+@router.post("", response_model=TaskOut, status_code=201)
 def create_task(payload: TaskCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     require_project_member(payload.project_id, current_user, db)
     task = Task(
