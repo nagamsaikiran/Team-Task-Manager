@@ -25,7 +25,7 @@ def require_admin(project: Project, user: User, db: Session):
     if not member and project.owner_id != user.id:
         raise HTTPException(status_code=403, detail="Admin access required")
 
-@router.post("/", response_model=ProjectOut, status_code=201)
+@router.post("", response_model=ProjectOut, status_code=201)
 def create_project(payload: ProjectCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     project = Project(name=payload.name, description=payload.description, owner_id=current_user.id)
     db.add(project)
@@ -36,7 +36,7 @@ def create_project(payload: ProjectCreate, db: Session = Depends(get_db), curren
     db.refresh(project)
     return project
 
-@router.get("/", response_model=List[ProjectOut])
+@router.get("", response_model=List[ProjectOut])
 def list_projects(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     memberships = db.query(ProjectMember).filter(ProjectMember.user_id == current_user.id).all()
     project_ids = [m.project_id for m in memberships]
